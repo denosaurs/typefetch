@@ -3,8 +3,7 @@
   "version": "0.0.1",
   "exports": {
     ".": "./mod.ts",
-    "./types/brand": "./types/brand.ts",
-    "./types/json": "./types/json.ts"
+    "cli": "./main.ts"
   },
   "imports": {
     "ts-morph": "npm:ts-morph@21.0.1",
