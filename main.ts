@@ -9,7 +9,7 @@ export * from "./mod.ts";
 
 if (import.meta.main) {
   const args = parseArgs(Deno.args, {
-    string: ["output", "ts-config"],
+    string: ["output", "config"],
     default: {
       output: "./typefetch.d.ts",
     },
@@ -24,7 +24,7 @@ if (import.meta.main) {
   const output = resolve(args.output);
 
   const openapi = (await import(input, { with: { type: "json" } })).default;
-  const project = new Project({ tsConfigFilePath: args.config as string | undefined });
+  const project = new Project({ tsConfigFilePath: args.config });
   const source = project.createSourceFile(output, undefined, { overwrite: true });
 
   addModuleComment(source, openapi.info);
