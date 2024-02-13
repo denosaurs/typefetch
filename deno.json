@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "exports": {
     ".": "./mod.ts",
-    "cli": "./main.ts"
+    "./cli": "./main.ts"
   },
   "imports": {
     "ts-morph": "npm:ts-morph@21.0.1",
