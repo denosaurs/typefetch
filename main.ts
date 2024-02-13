@@ -4,6 +4,7 @@ import { resolve } from "jsr:@std/path@0.215";
 import { ModuleDeclarationKind, Project } from "ts-morph";
 
 import { addModuleComment, addComponents, addPathsObject } from "./mod.ts";
+import { empty } from "./utils/mod.ts";
 
 export * from "./mod.ts";
 
@@ -15,12 +16,12 @@ if (import.meta.main) {
     },
   });
 
-  if (args._.length !== 1) {
+  if (args._.length !== 1 || empty(args._[0])) {
     console.error("Expected a single OpenAPI specification to transform");
     Deno.exit(1);
   }
 
-  const input = resolve(args._[0]);
+  const input = resolve(args._[0] as string);
   const output = resolve(args.output);
 
   const openapi = (await import(input, { with: { type: "json" } })).default;
