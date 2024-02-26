@@ -285,7 +285,7 @@ export function addOperationObject(
     addParameterObjects(document, operation.parameters, parameters);
   }
 
-  const requestBodyTypes: { contentType: string, requestBodyType: string }[] = [];
+  const requestBodyTypes: { contentType?: string, requestBodyType?: string }[] = [];
   if (operation.requestBody !== undefined) {
     if ("$ref" in operation.requestBody) { operation.requestBody = resolveRef<OpenAPI.RequestBodyObject>(document, operation.requestBody.$ref); }
 
@@ -293,6 +293,8 @@ export function addOperationObject(
       const requestBodyType = createRequestBodyType(document, contentType, object.schema);
       requestBodyTypes.push({ contentType, requestBodyType });
     }
+  } else {
+    requestBodyTypes.push({ requestBodyType: undefined, contentType: undefined });
   }
 
   const responseTypes: string[] = [];
@@ -340,19 +342,23 @@ export function addOperationObject(
             writer.block(() => {
               writer.writeLine(`method: "${method.toUpperCase()}";`);
 
-              writer.write("body");
-              writer.conditionalWrite(
-                !(
-                  operation.requestBody &&
-                  "required" in operation.requestBody &&
-                  operation.requestBody.required
-                ),
-                "?",
-              );
-              writer.write(`: ${requestBodyType};`);
-              writer.newLine();
+              if (requestBodyType !== undefined) {
+                writer.write("body");
+                writer.conditionalWrite(
+                  !(
+                    operation.requestBody &&
+                    "required" in operation.requestBody &&
+                    operation.requestBody.required
+                  ),
+                  "?",
+                );
+                writer.write(`: ${requestBodyType};`);
+                writer.newLine();
+              }
 
-              writer.write(`headers: { "Content-Type": "${contentType}"; };`);
+              if (contentType !== undefined) {
+                writer.write(`headers: { "Content-Type": "${contentType}"; };`);
+              }
             });
           },
         },

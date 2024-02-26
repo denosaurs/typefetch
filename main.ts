@@ -21,7 +21,7 @@ if (import.meta.main) {
     Deno.exit(1);
   }
 
-  const input = resolve(args._[0] as string);
+  const input = args._[0] as string;
   const output = resolve(args.output);
 
   const openapi = (await import(input, { with: { type: "json" } })).default;
@@ -41,7 +41,6 @@ if (import.meta.main) {
     name: "global",
   });
 
-  addModuleComment(source, openapi.info);
   addPathsObject(global, openapi, openapi.paths);
   addComponents(source, openapi, openapi.components);
 
