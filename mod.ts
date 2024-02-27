@@ -270,7 +270,7 @@ export function toTemplateString(document: OpenAPI.Document, pattern: string, pa
     );
   }
 
-  return `\`${patternTemplateString}\``;
+  return patternTemplateString;
 }
 
 export function addOperationObject(
@@ -323,6 +323,10 @@ export function addOperationObject(
     doc.tags.push({ tagName: "summary", text: operation.summary.trim() });
   }
 
+  const servers = document.servers?.map(({ url }) => url.endsWith("/") ? url.slice(0, -1) : url) ?? [`\${"http://" | "https://"}\${string}`];
+  const path = toTemplateString(document, pattern, parameters);
+  const input = [path, ...servers.map((server) => `${server}${path}`)].map((template) => `\`${template}\``).join(" | ");
+
   global.addFunctions(
     requestBodyTypes.map(({ contentType, requestBodyType }) => ({
       name: "fetch",
@@ -330,7 +334,7 @@ export function addOperationObject(
       parameters: [
         {
           name: "input",
-          type: toTemplateString(document, pattern, parameters),
+          type: input,
         },
         {
           name: "init",
