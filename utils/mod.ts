@@ -79,18 +79,22 @@ export function isOk(statusCode: number): boolean {
  * Resolves a JSON reference in an object.
  */
 export function resolveRef<T = unknown>(object: unknown, ref: string): T {
-  if (!ref.startsWith("#/"))
+  if (!ref.startsWith("#/")) {
     throw new TypeError("Only references which start with #/ are supported");
+  }
 
   const parts = ref.slice(2).split("/");
   let value = object as Record<string, T> | T;
   for (const part of parts) {
-    if (typeof value !== "object")
+    if (typeof value !== "object") {
       throw new TypeError(`Reference ${ref} has hit a non-traversable part`);
-    if (value === null || value === undefined)
+    }
+    if (value === null || value === undefined) {
       throw new TypeError(`Reference ${ref} has hit a nullish part`);
-    if (!(part in value))
+    }
+    if (!(part in value)) {
       throw new TypeError(`Reference ${ref} does not exist`);
+    }
 
     value = (value as Record<string, T>)[part];
   }
@@ -99,5 +103,4 @@ export function resolveRef<T = unknown>(object: unknown, ref: string): T {
 }
 
 export function pascalCase() {
-
 }

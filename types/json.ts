@@ -18,11 +18,11 @@ declare global {
      */
     parse<T>(
       text: JSONString<T>,
-      reviver?: (this: any, key: string, value: any) => any
+      reviver?: (this: any, key: string, value: any) => any,
     ): T;
     /**
      * Converts a JavaScript value of type {@link T} to a {@link Brand branded} JavaScript Object Notation (JSON) string.
-     * 
+     *
      * @param value A JavaScript value, usually an object or array, to be converted.
      * @param replacer A function that transforms the results.
      * @param space Adds indentation, white space, and line break characters to the return-value JSON text to make it easier to read.
@@ -30,11 +30,11 @@ declare global {
     stringify<T>(
       value: T,
       replacer?: (number | string)[] | null,
-      space?: string | number
+      space?: string | number,
     ): JSONString<T>;
     /**
      * Converts a JavaScript value of type {@link T} to a {@link Brand branded} JavaScript Object Notation (JSON) string.
-     * 
+     *
      * @param value A JavaScript value, usually an object or array, to be converted.
      * @param replacer An array of strings and numbers that acts as an approved list for selecting the object properties that will be stringified.
      * @param space Adds indentation, white space, and line break characters to the return-value JSON text to make it easier to read.
@@ -42,7 +42,7 @@ declare global {
     stringify<T>(
       value: T,
       replacer?: (this: any, key: string, value: any) => any,
-      space?: string | number
+      space?: string | number,
     ): JSONString<T>;
   }
 }
