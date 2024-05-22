@@ -1,4 +1,4 @@
-import { OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
+import type { OpenAPIV3, OpenAPIV3_1 } from "openapi-types";
 
 export declare namespace OpenAPI {
   type Document = OpenAPIV3.Document | OpenAPIV3_1.Document;
