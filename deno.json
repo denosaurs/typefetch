@@ -2,12 +2,7 @@
   "name": "@denosaurs/typefetch",
   "version": "0.0.3",
   "exports": {
-    ".": "./mod.ts",
-    "./cli": "./main.ts",
-    "./types/json": "./types/json.ts",
-    "./types/brand": "./types/brand.ts",
-    "./types/openapi": "./types/openapi.ts",
-    "./types/utils": "./types/utils.ts"
+    ".": "./main.ts"
   },
   "imports": {
     "@std/cli": "jsr:@std/cli@^0.224",

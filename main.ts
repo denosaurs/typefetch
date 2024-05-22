@@ -4,7 +4,7 @@ import * as yaml from "@std/yaml";
 
 import { ModuleDeclarationKind, Project } from "ts-morph";
 
-import { addComponents, addModuleComment, addPathsObject } from "./mod.ts";
+import { addComponents, addPathsObject, writeModuleComment } from "./mod.ts";
 import { empty } from "./utils/mod.ts";
 
 import manifest from "./deno.json" with { type: "json" };
@@ -18,7 +18,7 @@ if (import.meta.main) {
     alias: { help: "h", version: "V" },
     default: {
       output: "./typefetch.d.ts",
-      import: "denosaurs/typefetch",
+      import: "https://raw.githubusercontent.com/denosaurs/typefetch/main",
     },
     unknown: (arg, key) => {
       if (key === undefined) return;
@@ -39,7 +39,7 @@ if (import.meta.main) {
         `  -V, --version        Print the version of TypeFetch\n\n` +
         `      --output <FILE>  Output file path                     (default: typefetch.d.ts)\n` +
         `      --config <FILE>  File path to the tsconfig.json file\n` +
-        `      --import <PATH>  Import path for TypeFetch            (default: denosaurs/typefetch)`,
+        `      --import <PATH>  Import path for TypeFetch            (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)`,
     );
     Deno.exit(0);
   }
@@ -83,11 +83,13 @@ if (import.meta.main) {
 
   source.addImportDeclaration({
     isTypeOnly: true,
-    moduleSpecifier: `${args["import"]}/types/json`,
+    moduleSpecifier: `${args["import"]}/types/json${URL.canParse(args["import"]) ? ".ts" : ""}`,
     namedImports: ["JSONString"],
   });
 
-  addModuleComment(source, openapi.info);
+  source.insertText(0, (writer) => {
+    writeModuleComment(writer, openapi.info);
+  });
 
   const global = source.addModule({
     hasDeclareKeyword: true,
