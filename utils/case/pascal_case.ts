@@ -1,4 +1,4 @@
-import { noCase, Options } from "./no_case.ts";
+import { noCase, type Options } from "./no_case.ts";
 
 export type { Options };
 

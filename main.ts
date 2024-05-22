@@ -83,7 +83,9 @@ if (import.meta.main) {
 
   source.addImportDeclaration({
     isTypeOnly: true,
-    moduleSpecifier: `${args["import"]}/types/json${URL.canParse(args["import"]) ? ".ts" : ""}`,
+    moduleSpecifier: `${args["import"]}/types/json${
+      URL.canParse(args["import"]) ? ".ts" : ""
+    }`,
     namedImports: ["JSONString"],
   });
 

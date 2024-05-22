@@ -1,4 +1,4 @@
-import { Nullish } from "../types/utils.ts";
+import type { Nullish } from "../types/utils.ts";
 
 /**
  * Checks if the given value is not empty.
