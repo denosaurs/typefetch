@@ -7,7 +7,7 @@ import { ModuleDeclarationKind, Project } from "ts-morph";
 import { addComponents, addModuleComment, addPathsObject } from "./mod.ts";
 import { empty } from "./utils/mod.ts";
 
-import manifest from "./deno.json" assert { type: "json" };
+import manifest from "./deno.json" with { type: "json" };
 
 export * from "./mod.ts";
 
