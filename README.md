@@ -76,7 +76,7 @@ Which now allows you to use the `fetch` function with the
 `https://api.jsr.io/packages` endpoint as following:
 
 ```ts
-const response = await fetch("https://api.jsr.io/scopes");
+const response = await fetch("https://api.jsr.io/packages");
 
 // The ok and status properties work as discriminators here to narrow the
 // types of the response. That way the json and text methods are made
