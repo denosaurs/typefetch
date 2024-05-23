@@ -1,3 +1,12 @@
+/**
+ * # TypeFetch
+ * TypeFetch is a tool for generating zero-cost type-safe `fetch` clients from
+ * OpenAPI schemas. It works everywhere you can call `fetch`, and anywhere you can
+ * use TypeScript.
+ *
+ * @module
+ */
+
 import { parseArgs } from "@std/cli";
 import { resolve } from "@std/path";
 import * as yaml from "@std/yaml";
@@ -15,7 +24,7 @@ if (import.meta.main) {
   const args = parseArgs(Deno.args, {
     string: ["output", "config", "import"],
     boolean: ["help"],
-    alias: { help: "h", version: "V" },
+    alias: { output: "o", help: "h", version: "V" },
     default: {
       output: "./typefetch.d.ts",
       import: "https://raw.githubusercontent.com/denosaurs/typefetch/main",
@@ -37,7 +46,7 @@ if (import.meta.main) {
         `Options:\n` +
         `  -h, --help           Print this help message\n` +
         `  -V, --version        Print the version of TypeFetch\n\n` +
-        `      --output <FILE>  Output file path                     (default: typefetch.d.ts)\n` +
+        `  -o, --output <FILE>  Output file path                     (default: typefetch.d.ts)\n` +
         `      --config <FILE>  File path to the tsconfig.json file\n` +
         `      --import <PATH>  Import path for TypeFetch            (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)`,
     );

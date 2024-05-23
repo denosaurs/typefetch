@@ -21,7 +21,7 @@ Usage: typefetch [OPTIONS] <FILE>
 Options:
   -h, --help           Print this help message
   -V, --version        Print the version of TypeFetch
-      --output <FILE>  Output file path                     (default: typefetch.d.ts)
+  -o, --output <FILE>  Output file path                     (default: typefetch.d.ts)
       --config <FILE>  File path to the tsconfig.json file
       --import <PATH>  Import path for TypeFetch            (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)
 ```
