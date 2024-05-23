@@ -1,5 +1,6 @@
 /**
  * # TypeFetch
+ *
  * TypeFetch is a tool for generating zero-cost type-safe `fetch` clients from
  * OpenAPI schemas. It works everywhere you can call `fetch`, and anywhere you can
  * use TypeScript.
