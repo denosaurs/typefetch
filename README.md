@@ -16,8 +16,8 @@ deno run -A jsr:@denosaurs/typefetch
 ```
 
 ```
-Usage: typefetch [OPTIONS] <PATH>\n\n` +
-Options:\n` +
+Usage: typefetch [OPTIONS] <PATH>
+Options:
   -h, --help                  Print this help message
   -V, --version               Print the version of TypeFetch
   -o, --output   <PATH>       Output file path                                            (default: typefetch.d.ts)
