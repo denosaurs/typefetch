@@ -89,12 +89,18 @@ export function toSchemaType(
   }
 
   if (schema.anyOf) {
-    console.warn(
-      "Usage of anyOf operator with is not converted to the equivalent TypeScript type",
+    const objects = schema.anyOf.filter((schema) =>
+      "type" in schema && schema.type === "object"
     );
-    console.group();
-    console.warn(schema);
-    console.groupEnd();
+
+    if (objects.length > 1) {
+      console.warn(
+        "Usage of anyOf operator with objects is not converted to the equivalent TypeScript type",
+      );
+      console.group();
+      console.warn(schema);
+      console.groupEnd();
+    }
 
     return schema.anyOf
       .map((schema) => toSchemaType(document, schema))
