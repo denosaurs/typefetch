@@ -13,12 +13,25 @@ export * from "./mod.ts";
 
 if (import.meta.main) {
   const args = parseArgs(Deno.args, {
-    string: ["output", "config", "import"],
-    boolean: ["help"],
-    alias: { output: "o", help: "h", version: "V" },
+    string: [
+      "output",
+      "config",
+      "import",
+      "base-url",
+    ],
+    boolean: [
+      "help",
+      "include-base-url",
+      "include-server-urls",
+      "include-relative-url",
+    ],
+    alias: { "output": "o", "help": "h", "version": "V" },
     default: {
-      output: "./typefetch.d.ts",
-      import: "https://raw.githubusercontent.com/denosaurs/typefetch/main",
+      "output": "./typefetch.d.ts",
+      "import": "https://raw.githubusercontent.com/denosaurs/typefetch/main",
+      "include-base-url": false,
+      "include-server-urls": true,
+      "include-relative-url": false,
     },
     unknown: (arg, key) => {
       if (key === undefined) return;
@@ -32,14 +45,19 @@ if (import.meta.main) {
   });
 
   if (args.help) {
+    // deno-fmt-ignore
     console.log(
-      `Usage: typefetch [OPTIONS] <FILE>\n\n` +
-        `Options:\n` +
-        `  -h, --help           Print this help message\n` +
-        `  -V, --version        Print the version of TypeFetch\n\n` +
-        `  -o, --output <FILE>  Output file path                     (default: typefetch.d.ts)\n` +
-        `      --config <FILE>  File path to the tsconfig.json file\n` +
-        `      --import <PATH>  Import path for TypeFetch            (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)`,
+      `Usage: typefetch [OPTIONS] <PATH>\n\n` +
+      `Options:\n` +
+      `  -h, --help                  Print this help message\n` +
+      `  -V, --version               Print the version of TypeFetch\n` +
+      `  -o, --output   <PATH>       Output file path                                            (default: typefetch.d.ts)\n` +
+      `      --config   <PATH>       File path to the tsconfig.json file\n` +
+      `      --import   <PATH>       Import path for TypeFetch                                   (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)\n` +
+      `      --base-url <URL>        A custom base url for paths to start with\n` +
+      `      --include-base-url      Include the base url in the generated paths                 (default: false)\n` +
+      `      --include-server-urls   Include server URLs from the schema in the generated paths  (default: true)\n` +
+      `      --include-relative-url  Include relative URLs in the generated paths                (default: false)\n`,
     );
     Deno.exit(0);
   }
@@ -76,6 +94,13 @@ if (import.meta.main) {
     }
   }
 
+  const options = {
+    baseUrl: args["base-url"],
+    includeBaseUrl: args["include-base-url"],
+    includeServerUrls: args["include-server-urls"],
+    includeRelativeUrl: args["include-relative-url"],
+  };
+
   const project = new Project({ tsConfigFilePath: args.config });
   const source = project.createSourceFile(output, undefined, {
     overwrite: true,
@@ -99,7 +124,7 @@ if (import.meta.main) {
     name: "global",
   });
 
-  addPathsObject(global, openapi, openapi.paths);
+  addPathsObject(global, openapi, openapi.paths, options);
   addComponents(source, openapi, openapi.components);
 
   source.formatText({ indentSize: 2 });

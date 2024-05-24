@@ -24,6 +24,13 @@ export type Method = typeof methods[number];
 
 export type ParameterObjectMap = Map<string, OpenAPI.ParameterObject>;
 
+export interface Options {
+  baseUrl?: string;
+  includeBaseUrl?: boolean;
+  includeRelativeUrl?: boolean;
+  includeServerUrls?: boolean;
+}
+
 export function toSchemaType(
   document: OpenAPI.Document,
   schema?:
@@ -187,9 +194,10 @@ export function addPathsObject(
   global: ModuleDeclaration,
   document: OpenAPI.Document,
   paths: OpenAPI.PathsObject,
+  options: Options,
 ) {
   for (const [pattern, item] of Object.entries(paths)) {
-    addPathItemObject(global, document, pattern, item);
+    addPathItemObject(global, document, pattern, item, options);
   }
 }
 
@@ -211,6 +219,7 @@ export function addPathItemObject(
   document: OpenAPI.Document,
   pattern: string,
   item: NonNullable<OpenAPI.Document["paths"]>[string],
+  options: Options,
 ) {
   if (item === undefined) return;
   if ("$ref" in item && item.$ref !== undefined) {
@@ -237,6 +246,7 @@ export function addPathItemObject(
         structuredClone(parameters),
         method,
         operation,
+        options,
       );
     }
   }
@@ -341,6 +351,7 @@ export function addOperationObject(
   parameters: ParameterObjectMap,
   method: Method,
   operation: OpenAPI.OperationObject,
+  options: Options,
 ) {
   if (operation.parameters !== undefined) {
     addParameterObjects(document, operation.parameters, parameters);
@@ -407,14 +418,41 @@ export function addOperationObject(
     doc.tags.push({ tagName: "summary", text: operation.summary.trim() });
   }
 
-  const servers =
-    document.servers?.map(({ url }) =>
-      url.endsWith("/") ? url.slice(0, -1) : url
-    ) ?? [`\${"http://" | "https://"}\${string}`];
   const path = toTemplateString(document, pattern, parameters);
-  const input = [...servers.map((server) => `${server}${path}`), path].map((
-    template,
-  ) => `\`${template}\``).join(" | ");
+
+  const inputs = [];
+  if (options.includeBaseUrl) {
+    if (options.baseUrl?.trim()) {
+      options.baseUrl = options.baseUrl!.trim();
+      options.baseUrl = options.baseUrl.endsWith("/")
+        ? options.baseUrl.slice(0, -1)
+        : options.baseUrl;
+      inputs.push(`${options.baseUrl}${path}`);
+    } else {
+      inputs.push(`\${"http://" | "https://"}\${string}${path}`);
+    }
+  }
+  if (options.includeServerUrls) {
+    const servers = document.servers?.map(({ url }) =>
+      url.endsWith("/") ? url.slice(0, -1) : url
+    ) ?? [];
+    inputs.push(...servers.map((server) =>
+      `${server}${path}`
+    ));
+  }
+  if (options.includeRelativeUrl) {
+    inputs.push(path);
+  }
+
+  if (inputs.length === 0) {
+    throw new TypeError(
+      `No URLs were generated for ${path} with options ${
+        JSON.stringify(options)
+      }`,
+    );
+  }
+
+  const input = inputs.map((template) => `\`${template}\``).join("|");
 
   global.addFunctions(
     requestBodyTypes.map(({ contentType, requestBodyType }) => ({
