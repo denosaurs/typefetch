@@ -16,14 +16,17 @@ deno run -A jsr:@denosaurs/typefetch
 ```
 
 ```
-Usage: typefetch [OPTIONS] <FILE>
-
-Options:
-  -h, --help           Print this help message
-  -V, --version        Print the version of TypeFetch
-  -o, --output <FILE>  Output file path                     (default: typefetch.d.ts)
-      --config <FILE>  File path to the tsconfig.json file
-      --import <PATH>  Import path for TypeFetch            (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)
+Usage: typefetch [OPTIONS] <PATH>\n\n` +
+Options:\n` +
+  -h, --help                  Print this help message
+  -V, --version               Print the version of TypeFetch
+  -o, --output   <PATH>       Output file path                                            (default: typefetch.d.ts)
+      --config   <PATH>       File path to the tsconfig.json file
+      --import   <PATH>       Import path for TypeFetch                                   (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)
+      --base-url <URL>        A custom base url for paths to start with
+      --include-base-url      Include the base url in the generated paths                 (default: false)
+      --include-server-urls   Include server URLs from the schema in the generated paths  (default: true)
+      --include-relative-url  Include relative URLs in the generated paths                (default: false)
 ```
 
 ## Example
