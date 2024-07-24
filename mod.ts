@@ -31,6 +31,13 @@ export interface Options {
   includeServerUrls?: boolean;
 }
 
+export function escapeObjectKey(key: string): string {
+  if (/^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(key)) {
+    return key;
+  }
+  return `"${key}"`;
+}
+
 export function toSchemaType(
   document: OpenAPI.Document,
   schema?:
@@ -125,7 +132,7 @@ export function toSchemaType(
         return `{${
           Object.entries(schema.properties)
             .map(([property, type]) =>
-              `${property}:${toSchemaType(document, type)}`
+              `${escapeObjectKey(property)}:${toSchemaType(document, type)}`
             )
             .join(";")
         }}`;
