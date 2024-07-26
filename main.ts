@@ -28,7 +28,7 @@ if (import.meta.main) {
     alias: { "output": "o", "help": "h", "version": "V" },
     default: {
       "output": "./typefetch.d.ts",
-      "import": "https://raw.githubusercontent.com/denosaurs/typefetch/main",
+      "import": "jsr:@denosaurs/typefetch",
       "include-base-url": false,
       "include-server-urls": true,
       "include-relative-url": false,
@@ -53,7 +53,7 @@ if (import.meta.main) {
       `  -V, --version               Print the version of TypeFetch\n` +
       `  -o, --output   <PATH>       Output file path                                            (default: typefetch.d.ts)\n` +
       `      --config   <PATH>       File path to the tsconfig.json file\n` +
-      `      --import   <PATH>       Import path for TypeFetch                                   (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)\n` +
+      `      --import   <PATH>       Import path for TypeFetch                                   (default: jsr:@denosaurs/typefetch)\n` +
       `      --base-url <URL>        A custom base url for paths to start with\n` +
       `      --include-base-url      Include the base url in the generated paths                 (default: false)\n` +
       `      --include-server-urls   Include server URLs from the schema in the generated paths  (default: true)\n` +
