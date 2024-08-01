@@ -1,11 +1,10 @@
 import { parseArgs } from "@std/cli";
-import { resolve } from "@std/path";
 import * as yaml from "@std/yaml";
 
 import { ModuleDeclarationKind, Project } from "ts-morph";
 
 import { addComponents, addPathsObject, writeModuleComment } from "./mod.ts";
-import { empty } from "./utils/mod.ts";
+import { empty, resolve } from "./utils/mod.ts";
 
 import manifest from "./deno.json" with { type: "json" };
 

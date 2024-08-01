@@ -1,15 +1,20 @@
 {
   "name": "@denosaurs/typefetch",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "exports": {
     ".": "./main.ts"
   },
   "imports": {
-    "@std/cli": "jsr:@std/cli@^0.224",
-    "@std/path": "jsr:@std/path@^0.225",
+    "@std/cli": "jsr:@std/cli@^1",
+    "@std/path": "jsr:@std/path@^1",
     "@std/yaml": "jsr:@std/yaml@^0.224",
+    "@std/http": "jsr:@std/http@^0.224",
     "openapi-types": "npm:openapi-types@12.1",
     "ts-morph": "npm:ts-morph@22.0"
+  },
+  "exclude": ["tests/*/schemas/*.ts"],
+  "test": {
+    "include": ["tests/test.ts"]
   },
   "lock": false
 }

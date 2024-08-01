@@ -1,3 +1,5 @@
+import { fromFileUrl, resolve as pathResolve } from "@std/path";
+
 import type { Nullish } from "../types/utils.ts";
 
 /**
@@ -71,7 +73,10 @@ export function empty<T>(x: Nullish<T>): x is null | undefined {
 /**
  * Checks that an HTTP status code is in the 2xx range.
  */
-export function isOk(statusCode: number): boolean {
+export function isOk(statusCode: number | number[]): boolean {
+  if (Array.isArray(statusCode)) {
+    return statusCode.every(isOk);
+  }
   return statusCode >= 200 && statusCode < 300;
 }
 
@@ -102,5 +107,20 @@ export function resolveRef<T = unknown>(object: unknown, ref: string): T {
   return value as T;
 }
 
-export function pascalCase() {
+/**
+ * Resolves a path to an absolute path with support for file URLs.
+ */
+export function resolve(path: string | URL): string {
+  if (URL.canParse(path)) {
+    try {
+      path = fromFileUrl(path);
+      // deno-lint-ignore no-empty
+    } catch {}
+  }
+
+  if (path instanceof URL) {
+    throw new TypeError("URLs must be able to be resolved to file paths");
+  }
+
+  return pathResolve(path);
 }
