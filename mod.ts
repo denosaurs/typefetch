@@ -4,11 +4,14 @@ import type {
   ModuleDeclaration,
   SourceFile,
 } from "ts-morph";
+import { STATUS_CODE } from "@std/http";
 
 import type { OpenAPI } from "./types/openapi.ts";
 
 import { empty, isOk, notEmpty, resolveRef } from "./utils/mod.ts";
 import { pascalCase } from "./utils/case/pascal_case.ts";
+
+export const statusCodes = Object.values(STATUS_CODE) as number[];
 
 export const methods = [
   "get",
@@ -295,12 +298,20 @@ export function createRequestBodyType(
 
 export function createResponseType(
   document: OpenAPI.Document,
-  statusCode: number,
+  statusCode: number | number[],
   response: OpenAPI.ResponseObject,
 ): string {
   const okAndStatus = `ok: ${
-    isOk(statusCode) ? "true" : "false"
-  }; status: ${statusCode};`;
+    Array.isArray(statusCode)
+      ? statusCode.every(isOk)
+        ? "true"
+        : statusCode.some(isOk)
+        ? "boolean"
+        : "false"
+      : isOk(statusCode)
+      ? "true"
+      : "false"
+  }; status: ${Array.isArray(statusCode) ? statusCode.join("|") : statusCode};`;
 
   if (empty(response.content)) {
     return `{ ${okAndStatus} }`;
@@ -399,20 +410,62 @@ export function addOperationObject(
     });
   }
 
-  const responseTypes: string[] = [];
+  const responseTypeParameters = [];
   if (operation.responses !== undefined) {
     for (
       let [statusCodeString, response] of Object.entries<
         OpenAPI.ReferenceObject | OpenAPI.ResponseObject
       >(operation.responses)
     ) {
-      const statusCode = Number.parseInt(statusCodeString);
+      let statusCode: "default" | number | number[];
+      if (statusCodeString === "default") {
+        statusCode = "default";
+      } else if (
+        statusCodeString.length === 3 && statusCodeString.endsWith("XX")
+      ) {
+        const range = Number.parseInt(statusCodeString[0]);
+        if (Number.isNaN(range) || range < 1 || range > 5) {
+          throw new TypeError(
+            `Invalid status code ${statusCodeString} for ${method} ${pattern}`,
+          );
+        }
+        statusCode = new Array(100)
+          .fill(0)
+          .map((_, index) => range * 100 + index)
+          .filter((statusCode) => statusCodes.includes(statusCode));
+      } else {
+        statusCode = Number.parseInt(statusCodeString);
+        if (Number.isNaN(statusCode)) {
+          throw new TypeError(
+            `Invalid status code ${statusCodeString} for ${method} ${pattern}`,
+          );
+        }
+      }
+
       if ("$ref" in response) {
         response = resolveRef<OpenAPI.ResponseObject>(document, response.$ref);
       }
-      const responseType = createResponseType(document, statusCode, response);
-      responseTypes.push(responseType);
+
+      responseTypeParameters.push({ statusCode, response });
     }
+  }
+  const responseTypes: string[] = [];
+  for (let { statusCode, response } of responseTypeParameters) {
+    if (statusCode === "default") {
+      const otherStatusCodes = responseTypeParameters
+        .filter(({ statusCode }) => statusCode !== "default")
+        .flatMap(({ statusCode }) => {
+          if (statusCode === "default") return [];
+          if (typeof statusCode === "number") return [statusCode];
+          return statusCode;
+        });
+      statusCode = new Array(500)
+        .fill(0)
+        .map((_, index) => index + 100)
+        .filter((statusCode) => !otherStatusCodes.includes(statusCode))
+        .filter((statusCode) => statusCodes.includes(statusCode));
+    }
+    responseTypes.push(createResponseType(document, statusCode, response));
   }
 
   const doc: Pick<JSDocStructure, "description" | "tags"> = {};

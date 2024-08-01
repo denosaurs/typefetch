@@ -1,0 +1,15 @@
+{
+  "version": "3",
+  "packages": {
+    "specifiers": {
+      "npm:type-testing": "npm:type-testing@0.2.0"
+    },
+    "npm": {
+      "type-testing@0.2.0": {
+        "integrity": "sha512-HAf4o9LjUAh9xEIXZTNm+ak2tjTgK64QhTlT/D8UNedII2/eagdEbtbaVK6920K7+QBrwfvxpjPGlfWVKZ+MZQ==",
+        "dependencies": {}
+      }
+    }
+  },
+  "remote": {}
+}

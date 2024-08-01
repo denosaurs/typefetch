@@ -48,3 +48,17 @@ jobs:
 
       - name: Run deno check main.ts
         run: deno check main.ts
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Setup latest deno version
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Run deno test
+        run: deno test -A
