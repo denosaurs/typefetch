@@ -94,6 +94,8 @@ export function toSchemaType(
   if (schema.oneOf) {
     return schema.oneOf
       .map((schema) => toSchemaType(document, schema))
+      // Prevents narrowing of string literal union to string
+      .map((type) => type === "string" ? "(string & {})" : type)
       .filter(Boolean)
       .join("|");
   }
@@ -114,6 +116,8 @@ export function toSchemaType(
 
     return schema.anyOf
       .map((schema) => toSchemaType(document, schema))
+      // Prevents narrowing of string literal union to string
+      .map((type) => type === "string" ? "(string & {})" : type)
       .filter(Boolean)
       .join("|");
   }
