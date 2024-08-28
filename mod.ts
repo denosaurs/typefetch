@@ -32,6 +32,7 @@ export interface Options {
   includeBaseUrl?: boolean;
   includeRelativeUrl?: boolean;
   includeServerUrls?: boolean;
+  experimentalURLSearchParams?: boolean;
 }
 
 export function escapeObjectKey(key: string): string {
@@ -357,10 +358,21 @@ export function toTemplateString(
   document: OpenAPI.Document,
   pattern: string,
   parameters: ParameterObjectMap,
+  options: Options,
 ): string {
   let patternTemplateString = pattern;
+  const urlSearchParamsRecord = [];
 
   for (const parameter of parameters.values()) {
+    if (parameter.in === "query") {
+      const optional = !parameter.required ? "?" : "";
+      const types = [toSchemaType(document, parameter.schema) ?? "string"];
+      if (parameter.allowEmptyValue === true) types.push("true");
+      urlSearchParamsRecord.push(
+        `${escapeObjectKey(parameter.name)}${optional}: ${types.join("|")}`,
+      );
+    }
+
     if (parameter.in !== "path") continue;
 
     patternTemplateString = patternTemplateString.replace(
@@ -369,7 +381,13 @@ export function toTemplateString(
     );
   }
 
-  return patternTemplateString;
+  const URLSearchParams = urlSearchParamsRecord.length > 0
+    ? options.experimentalURLSearchParams
+      ? `\${URLSearchParamsString<{${urlSearchParamsRecord.join(";")}}>}`
+      : "?${string}"
+    : "";
+
+  return `${patternTemplateString}${URLSearchParams}`;
 }
 
 export function addOperationObject(
@@ -488,7 +506,7 @@ export function addOperationObject(
     doc.tags.push({ tagName: "summary", text: operation.summary.trim() });
   }
 
-  const path = toTemplateString(document, pattern, parameters);
+  const path = toTemplateString(document, pattern, parameters, options);
 
   const inputs = [];
   if (options.includeBaseUrl) {
