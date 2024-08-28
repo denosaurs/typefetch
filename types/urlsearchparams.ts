@@ -1,4 +1,3 @@
-// Copyright 2023 Elias Sjögreen. All rights reserved. MIT license.
 // deno-fmt-ignore-file
 
 /**
