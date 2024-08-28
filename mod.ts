@@ -361,15 +361,21 @@ export function toTemplateString(
   options: Options,
 ): string {
   let patternTemplateString = pattern;
+  let urlSearchParamsOptional = true;
   const urlSearchParamsRecord = [];
 
   for (const parameter of parameters.values()) {
     if (parameter.in === "query") {
-      const optional = !parameter.required ? "?" : "";
+      if (parameter.required) {
+        urlSearchParamsOptional = false;
+      }
+
       const types = [toSchemaType(document, parameter.schema) ?? "string"];
       if (parameter.allowEmptyValue === true) types.push("true");
       urlSearchParamsRecord.push(
-        `${escapeObjectKey(parameter.name)}${optional}: ${types.join("|")}`,
+        `${escapeObjectKey(parameter.name)}${!parameter.required ? "?" : ""}: ${
+          types.join("|")
+        }`,
       );
     }
 
@@ -384,6 +390,8 @@ export function toTemplateString(
   const URLSearchParams = urlSearchParamsRecord.length > 0
     ? options.experimentalURLSearchParams
       ? `\${URLSearchParamsString<{${urlSearchParamsRecord.join(";")}}>}`
+      : urlSearchParamsOptional
+      ? '${"" | `?${string}`}'
       : "?${string}"
     : "";
 
