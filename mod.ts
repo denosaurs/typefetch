@@ -149,7 +149,7 @@ export function toSchemaType(
     }
     case "array": {
       const items = toSchemaType(document, schema.items);
-      if (items !== undefined) return `${items}[]`;
+      if (items !== undefined) return `(${items})[]`;
       return "unknown[]";
     }
     case "null":

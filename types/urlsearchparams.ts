@@ -64,7 +64,7 @@ type MayInclude<T extends string, R extends readonly string[] = []> = R | { [K i
  * @example MustInclude<"a" | "b"> = ["a", "b"] | ["b", "a"]
  * @example MustInclude<"a" | "b" | "c"> = ["a", "b", "c"] | ["a", "c", "b"] | ["b", "a", "c"] | ["b", "c", "a"] | ["c", "a", "b"] | ["c", "b", "a"]
  */
-type MustInclude<T extends string> = { [K in T]: Exclude<T, K> extends never ? [K] : [K, ...MustInclude<Exclude<T, K>>] }[T];
+type MustInclude<T extends string> = { [K in T]: [Exclude<T, K>] extends [never] ? [K] : [K, ...MustInclude<Exclude<T, K>>] }[T];
 
 /**
  * Extracts all required search params as a union of `URLSearchParamsKeyValue`
