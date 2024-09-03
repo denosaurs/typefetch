@@ -152,7 +152,9 @@ export function toSchemaType(
         return `{${
           Object.entries(schema.properties)
             .map(([property, type]) =>
-              `${escapeObjectKey(property)}:${toSchemaType(document, type)}`
+              `${escapeObjectKey(property)}${
+                schema.required?.includes(property) ? "" : "?"
+              }:${toSchemaType(document, type)}`
             )
             .join(";")
         }}`;
