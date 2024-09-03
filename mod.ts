@@ -149,8 +149,11 @@ export function toSchemaType(
       return "number";
     case "object": {
       if ("properties" in schema && schema.properties !== undefined) {
+        const properties = Object.entries(schema.properties);
+        if (properties.length === 0) return "Record<string, never>";
+
         return `{${
-          Object.entries(schema.properties)
+          properties
             .map(([property, type]) =>
               `${escapeObjectKey(property)}${
                 schema.required?.includes(property) ? "" : "?"
@@ -683,3 +686,4 @@ export function addComponents(
     );
   }
 }
+ 
