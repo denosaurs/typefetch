@@ -42,6 +42,20 @@ export function escapeObjectKey(key: string): string {
   return `"${key}"`;
 }
 
+/**
+ * Prevents narrowing of string literal union to string.
+ */
+function toSafeUnionString(
+  type: string | undefined,
+  _: number,
+  types: (string | undefined)[],
+): string | undefined {
+  if (type === "string" && types.length > 1) {
+    return "NonNullable<string>";
+  }
+  return type;
+}
+
 export function toSchemaType(
   document: OpenAPI.Document,
   schema?:
@@ -95,8 +109,7 @@ export function toSchemaType(
   if (schema.oneOf) {
     return schema.oneOf
       .map((schema) => toSchemaType(document, schema))
-      // Prevents narrowing of string literal union to string
-      .map((type) => type === "string" ? "(string & {})" : type)
+      .map(toSafeUnionString)
       .filter(Boolean)
       .join("|");
   }
@@ -117,8 +130,7 @@ export function toSchemaType(
 
     return schema.anyOf
       .map((schema) => toSchemaType(document, schema))
-      // Prevents narrowing of string literal union to string
-      .map((type) => type === "string" ? "(string & {})" : type)
+      .map(toSafeUnionString)
       .filter(Boolean)
       .join("|");
   }

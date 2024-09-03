@@ -1,6 +1,6 @@
 {
   "name": "@denosaurs/typefetch",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "exports": {
     ".": "./main.ts"
   },
