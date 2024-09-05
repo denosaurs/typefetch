@@ -310,6 +310,9 @@ export function createRequestBodyType(
     case "application/x-www-form-urlencoded":
       type = "URLSearchParams";
       break;
+    case "text/event-stream":
+      type = "ReadableStream";
+      break;
     case "application/octet-stream":
       type = "ReadableStream | Blob | BufferSource";
       break;
