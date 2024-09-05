@@ -310,9 +310,6 @@ export function createRequestBodyType(
     case "application/x-www-form-urlencoded":
       type = "URLSearchParams";
       break;
-    case "text/event-stream":
-      type = "ReadableStream";
-      break;
     case "application/octet-stream":
       type = "ReadableStream | Blob | BufferSource";
       break;
@@ -360,9 +357,13 @@ export function createResponseType(
             return (
               `{ ${okAndStatus} formData(): Promise<FormData>; }`
             );
+          case "text/event-stream":
+            return (
+              `{ ${okAndStatus} readonly body: ReadableStream<Uint8Array>; }`
+            );
           case "application/octet-stream":
             return (
-              `{ ${okAndStatus} arrayBuffer(): Promise<ArrayBuffer>; blob(): Promise<Blob>; }`
+              `{ ${okAndStatus} readonly body: ReadableStream<Uint8Array>; arrayBuffer(): Promise<ArrayBuffer>; blob(): Promise<Blob>; }`
             );
           default:
             return (
