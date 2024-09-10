@@ -1,14 +1,14 @@
 {
   "name": "@denosaurs/typefetch",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "exports": {
     ".": "./main.ts"
   },
   "imports": {
     "@std/cli": "jsr:@std/cli@^1",
     "@std/path": "jsr:@std/path@^1",
-    "@std/yaml": "jsr:@std/yaml@^0.224",
-    "@std/http": "jsr:@std/http@^0.224",
+    "@std/yaml": "jsr:@std/yaml@^1",
+    "@std/http": "jsr:@std/http@^1",
     "openapi-types": "npm:openapi-types@12.1",
     "ts-morph": "npm:ts-morph@22.0"
   },

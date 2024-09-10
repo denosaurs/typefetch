@@ -680,6 +680,10 @@ export function addComponents(
           });
         }
 
+        if (typeof doc.description === "string") {
+          doc.description = doc.description.trim();
+        }
+
         return ({
           isExported: true,
           docs: notEmpty(doc) ? [doc] : [],
