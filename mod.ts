@@ -585,11 +585,21 @@ export function addOperationObject(
           hasQuestionToken: method === "get" &&
             operation.requestBody === undefined,
           type: (writer) => {
+            const omit = ["method", "body"];
+
+            if (contentType !== undefined) {
+              omit.push("headers");
+            }
+
             writer.write(
-              `Omit<RequestInit, "method" | "body" | "headers"> &`,
+              `Omit<RequestInit, ${omit.map((key) => `"${key}"`).join("|")}> &`,
             );
             writer.block(() => {
-              writer.writeLine(`method: "${method.toUpperCase()}";`);
+              writer.writeLine(
+                `method${
+                  method === "get" ? "?" : ""
+                }: "${method.toUpperCase()}";`,
+              );
 
               if (requestBodyType !== undefined) {
                 writer.write("body");
@@ -606,7 +616,9 @@ export function addOperationObject(
               }
 
               if (contentType !== undefined) {
-                writer.write(`headers: { "Content-Type": "${contentType}"; };`);
+                writer.write(
+                  `headers: { "Content-Type": "${contentType}"; } & Record<string, string>;`,
+                );
               }
             });
           },
