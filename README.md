@@ -19,16 +19,16 @@ deno run -A jsr:@denosaurs/typefetch
 Usage: typefetch [OPTIONS] <PATH>
 
 Options:
-  -h, --help                          Print this help message
-  -V, --version                       Print the version of TypeFetch
-  -o, --output   <PATH>               Output file path                                            (default: typefetch.d.ts)
-      --config   <PATH>               File path to the tsconfig.json file
-      --import   <PATH>               Import path for TypeFetch                                   (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)
-      --base-url <URL>                A custom base url for paths to start with
-      --include-base-url              Include the base url in the generated paths                 (default: false)
-      --include-server-urls           Include server URLs from the schema in the generated paths  (default: true)
-      --include-relative-url          Include relative URLs in the generated paths                (default: false)
-      --experimental-urlsearchparams  Enable the experimental fully typed URLSearchParams type    (default: false)
+  -h, --help                           Print this help message
+  -V, --version                        Print the version of TypeFetch
+  -o, --output    <PATH>               Output file path                                                   (default: typefetch.d.ts)
+      --config    <PATH>               File path to the tsconfig.json file
+      --import    <PATH>               Import path for TypeFetch                                          (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)
+      --base-urls <URLS>               A comma separated list of custom base urls for paths to start with
+      --include-server-urls            Include server URLs from the schema in the generated paths         (default: true)
+      --include-absolute-url           Include absolute URLs in the generated paths                       (default: false)
+      --include-relative-url           Include relative URLs in the generated paths                       (default: false)
+      --experimental-urlsearchparams   Enable the experimental fully typed URLSearchParams type           (default: false)
 ```
 
 ## Example

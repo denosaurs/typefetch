@@ -16,11 +16,11 @@ if (import.meta.main) {
       "output",
       "config",
       "import",
-      "base-url",
+      "base-urls",
     ],
     boolean: [
       "help",
-      "include-base-url",
+      "include-absolute-url",
       "include-server-urls",
       "include-relative-url",
       "experimental-urlsearchparams",
@@ -29,8 +29,8 @@ if (import.meta.main) {
     default: {
       "output": "./typefetch.d.ts",
       "import": "https://raw.githubusercontent.com/denosaurs/typefetch/main",
-      "include-base-url": false,
       "include-server-urls": true,
+      "include-absolute-url": false,
       "include-relative-url": false,
       "experimental-urlsearchparams": false,
     },
@@ -50,16 +50,16 @@ if (import.meta.main) {
     console.log(
       `Usage: typefetch [OPTIONS] <PATH>\n\n` +
       `Options:\n` +
-      `  -h, --help                          Print this help message\n` +
-      `  -V, --version                       Print the version of TypeFetch\n` +
-      `  -o, --output   <PATH>               Output file path                                            (default: typefetch.d.ts)\n` +
-      `      --config   <PATH>               File path to the tsconfig.json file\n` +
-      `      --import   <PATH>               Import path for TypeFetch                                   (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)\n` +
-      `      --base-url <URL>                A custom base url for paths to start with\n` +
-      `      --include-base-url              Include the base url in the generated paths                 (default: false)\n` +
-      `      --include-server-urls           Include server URLs from the schema in the generated paths  (default: true)\n` +
-      `      --include-relative-url          Include relative URLs in the generated paths                (default: false)\n` +
-      `      --experimental-urlsearchparams  Enable the experimental fully typed URLSearchParams type    (default: false)\n`,
+      `  -h, --help                           Print this help message\n` +
+      `  -V, --version                        Print the version of TypeFetch\n` +
+      `  -o, --output    <PATH>               Output file path                                                   (default: typefetch.d.ts)\n` +
+      `      --config    <PATH>               File path to the tsconfig.json file\n` +
+      `      --import    <PATH>               Import path for TypeFetch                                          (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)\n` +
+      `      --base-urls <URLS>               A comma separated list of custom base urls for paths to start with\n` +
+      `      --include-server-urls            Include server URLs from the schema in the generated paths         (default: true)\n` +
+      `      --include-absolute-url           Include absolute URLs in the generated paths                       (default: false)\n` +
+      `      --include-relative-url           Include relative URLs in the generated paths                       (default: false)\n` +
+      `      --experimental-urlsearchparams   Enable the experimental fully typed URLSearchParams type           (default: false)\n`,
     );
     Deno.exit(0);
   }
@@ -97,8 +97,8 @@ if (import.meta.main) {
   }
 
   const options = {
-    baseUrl: args["base-url"],
-    includeBaseUrl: args["include-base-url"],
+    baseUrls: args["base-urls"]?.split(","),
+    includeAbsoluteUrl: args["include-absolute-url"],
     includeServerUrls: args["include-server-urls"],
     includeRelativeUrl: args["include-relative-url"],
     experimentalURLSearchParams: args["experimental-urlsearchparams"],

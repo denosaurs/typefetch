@@ -28,8 +28,8 @@ export type Method = typeof methods[number];
 export type ParameterObjectMap = Map<string, OpenAPI.ParameterObject>;
 
 export interface Options {
-  baseUrl?: string;
-  includeBaseUrl?: boolean;
+  baseUrls?: string[];
+  includeAbsoluteUrl?: boolean;
   includeRelativeUrl?: boolean;
   includeServerUrls?: boolean;
   experimentalURLSearchParams?: boolean;
@@ -538,17 +538,21 @@ export function addOperationObject(
   const path = toTemplateString(document, pattern, parameters, options);
 
   const inputs = [];
-  if (options.includeBaseUrl) {
-    if (options.baseUrl?.trim()) {
-      options.baseUrl = options.baseUrl!.trim();
-      options.baseUrl = options.baseUrl.endsWith("/")
-        ? options.baseUrl.slice(0, -1)
-        : options.baseUrl;
-      inputs.push(`${options.baseUrl}${path}`);
-    } else {
-      inputs.push(`\${"http://" | "https://"}\${string}${path}`);
+
+  for (let baseUrl of options.baseUrls ?? []) {
+    if (baseUrl.trim() === "") {
+      continue;
     }
+
+    baseUrl = baseUrl!.trim();
+    baseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+    inputs.push(`${baseUrl}${path}`);
   }
+
+  if (options.includeAbsoluteUrl) {
+    inputs.push(`\${"http://" | "https://"}\${string}${path}`);
+  }
+
   if (options.includeServerUrls) {
     const servers = document.servers?.map(({ url }) =>
       url.endsWith("/") ? url.slice(0, -1) : url
