@@ -1,8 +1,13 @@
 # TypeFetch
 
-TypeFetch is a tool for generating zero-cost type-safe `fetch` clients from
-OpenAPI schemas. It works everywhere you can call `fetch`, and anywhere you can
-use TypeScript.
+I dream of proper meta-programming in the wild west of ECMAScript. A parallel
+universe where ECMAScript had types, macros, and a proper module system. Where
+modules work regardless of environment and runtime. Where interfacing with the
+system is standardized, and code from server runtimes work in the browser. But
+alas, we are stuck in this bad joke of a universe where TypeScript is the next
+best thing. So, I present to you, TypeFetch, a tool for generating zero-cost
+type-safe `fetch` clients from OpenAPI schemas. It works everywhere you can call
+`fetch`, and anywhere you can use TypeScript.
 
 ## Usage
 
