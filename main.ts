@@ -50,16 +50,16 @@ if (import.meta.main) {
     console.log(
       `Usage: typefetch [OPTIONS] <PATH>\n\n` +
       `Options:\n` +
-      `  -h, --help                           Print this help message\n` +
-      `  -V, --version                        Print the version of TypeFetch\n` +
-      `  -o, --output    <PATH>               Output file path                                                   (default: typefetch.d.ts)\n` +
-      `      --config    <PATH>               File path to the tsconfig.json file\n` +
-      `      --import    <PATH>               Import path for TypeFetch                                          (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)\n` +
-      `      --base-urls <URLS>               A comma separated list of custom base urls for paths to start with\n` +
-      `      --include-server-urls            Include server URLs from the schema in the generated paths         (default: true)\n` +
-      `      --include-absolute-url           Include absolute URLs in the generated paths                       (default: false)\n` +
-      `      --include-relative-url           Include relative URLs in the generated paths                       (default: false)\n` +
-      `      --experimental-urlsearchparams   Enable the experimental fully typed URLSearchParams type           (default: false)\n`,
+      `  -h, --help                          Print this help message\n` +
+      `  -V, --version                       Print the version of TypeFetch\n` +
+      `  -o, --output    <PATH>              Output file path                                                   (default: typefetch.d.ts)\n` +
+      `      --config    <PATH>              File path to the tsconfig.json file\n` +
+      `      --import    <PATH>              Import path for TypeFetch                                          (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)\n` +
+      `      --base-urls <URLS>              A comma separated list of custom base urls for paths to start with\n` +
+      `      --include-server-urls           Include server URLs from the schema in the generated paths         (default: true)\n` +
+      `      --include-absolute-url          Include absolute URLs in the generated paths                       (default: false)\n` +
+      `      --include-relative-url          Include relative URLs in the generated paths                       (default: false)\n` +
+      `      --experimental-urlsearchparams  Enable the experimental fully typed URLSearchParams type           (default: false)\n`,
     );
     Deno.exit(0);
   }
@@ -115,6 +115,14 @@ if (import.meta.main) {
       URL.canParse(args["import"]) ? ".ts" : ""
     }`,
     namedImports: ["JSONString"],
+  });
+
+  source.addImportDeclaration({
+    isTypeOnly: true,
+    moduleSpecifier: `${args["import"]}/types/headers${
+      URL.canParse(args["import"]) ? ".ts" : ""
+    }`,
+    namedImports: ["TypedHeadersInit"],
   });
 
   if (options.experimentalURLSearchParams) {
