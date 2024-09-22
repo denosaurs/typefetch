@@ -588,9 +588,14 @@ export function addOperationObject(
 
   if (inputs.length === 0) {
     throw new TypeError(
-      `No URLs were generated for ${path} with options ${
-        JSON.stringify(options)
-      }`,
+      `No URLs were generated for ${path} with the options:\n${
+        JSON.stringify(options, null, 2)
+      }\n\n` +
+        `You may want to run TypeFetch with one of the following options:\n` +
+        `  --base-urls <URLS>      A comma separated list of custom base urls for paths to start with\n` +
+        `  --include-server-urls   Include server URLs from the schema in the generated paths\n` +
+        `  --include-absolute-url  Include absolute URLs in the generated paths\n` +
+        `  --include-relative-url  Include relative URLs in the generated paths\n`,
     );
   }
 
