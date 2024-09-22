@@ -1,5 +1,6 @@
 import { parseArgs } from "@std/cli";
 import * as yaml from "@std/yaml";
+import { wait } from "@denosaurs/wait";
 
 import { ModuleDeclarationKind, Project } from "ts-morph";
 
@@ -77,24 +78,28 @@ if (import.meta.main) {
     Deno.exit(1);
   }
 
+  const importSpinner = wait("Resolving schema").start();
   const input = args._[0] as string;
   const output = resolve(args.output);
 
   let openapi;
   try {
+    importSpinner.text = "Trying to import OpenAPI schema as JSON";
     openapi = (await import(input, { with: { type: "json" } })).default;
   } catch (error) {
+    importSpinner.text = "Trying to import OpenAPI schema as YAML";
     try {
       // Try to import the OpenAPI schema as YAML
       openapi = yaml.parse(await (await fetch(input)).text());
     } catch {
-      console.error(`Failed to load OpenAPI schema from ${input}`);
+      importSpinner.fail(`Failed to load OpenAPI schema from ${input}`);
       console.group();
       console.error(error);
       console.groupEnd();
       Deno.exit(1);
     }
   }
+  importSpinner.succeed("Schema resolved");
 
   const options = {
     baseUrls: args["base-urls"]?.split(","),
@@ -148,7 +153,8 @@ if (import.meta.main) {
   addPathsObject(global, openapi, openapi.paths, options);
   addComponents(source, openapi, openapi.components);
 
-  source.formatText({ indentSize: 2 });
-
+  const saveSpinner = wait("Saving generated definitions").start();
+  source.formatText({ indentSize: 2, ensureNewLineAtEndOfFile: true });
   await source.save();
+  saveSpinner.succeed("Definitions saved");
 }
