@@ -10,6 +10,7 @@ import type { OpenAPI } from "./types/openapi.ts";
 
 import { empty, isOk, notEmpty, resolveRef } from "./utils/mod.ts";
 import { pascalCase } from "./utils/case/pascal_case.ts";
+import { wait } from "@denosaurs/wait";
 
 export const statusCodes = Object.values(STATUS_CODE) as number[];
 
@@ -234,9 +235,15 @@ export function addPathsObject(
   paths: OpenAPI.PathsObject,
   options: Options,
 ) {
+  const spinner = wait("Adding OpenAPI paths").start();
+
   for (const [pattern, item] of Object.entries(paths)) {
+    spinner.text = `Generating ${pattern}...`;
+    spinner.render();
     addPathItemObject(global, document, pattern, item, options);
   }
+
+  spinner.succeed("OpenAPI paths added");
 }
 
 export function addParameterObjects(
@@ -678,11 +685,16 @@ export function addComponents(
   document: OpenAPI.Document,
   components: OpenAPI.ComponentsObject,
 ) {
+  const spinner = wait("Adding OpenAPI components").start();
+
   if (notEmpty(components.schemas)) {
     source.addTypeAliases(
       Object.entries<OpenAPI.SchemaObject | OpenAPI.ReferenceObject>(
         components.schemas,
       ).map(([name, schema]) => {
+        spinner.text = `Adding ${name}...`;
+        spinner.render();
+
         const doc: Pick<JSDocStructure, "description" | "tags"> = {};
 
         if ("deprecated" in schema && schema.deprecated === true) {
@@ -739,4 +751,6 @@ export function addComponents(
       }),
     );
   }
+
+  spinner.succeed("OpenAPI components added");
 }
