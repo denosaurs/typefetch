@@ -419,6 +419,26 @@ export function toTemplateString(
   return `${patternTemplateString}${URLSearchParams}`;
 }
 
+export function toHeadersInitType(
+  document: OpenAPI.Document,
+  parameters: ParameterObjectMap,
+  additionalHeaders: string[] = [],
+): string | undefined {
+  const headersInitProperties = [...additionalHeaders];
+
+  for (const parameter of parameters.values()) {
+    if (parameter.in !== "header") continue;
+    headersInitProperties.push(
+      `"${parameter.name}"${parameter.required ? "" : "?"}: ${
+        toSchemaType(document, parameter.schema) ?? "string"
+      }`,
+    );
+  }
+
+  if (headersInitProperties.length === 0) return undefined;
+  return `TypedHeadersInit<{ ${headersInitProperties.join("; ")} }>`;
+}
+
 export function addOperationObject(
   global: ModuleDeclaration,
   document: OpenAPI.Document,
@@ -561,6 +581,7 @@ export function addOperationObject(
       `${server}${path}`
     ));
   }
+
   if (options.includeRelativeUrl) {
     inputs.push(path);
   }
@@ -590,8 +611,14 @@ export function addOperationObject(
             operation.requestBody === undefined,
           type: (writer) => {
             const omit = ["method", "body"];
+            const additionalHeaders = [];
 
             if (contentType !== undefined) {
+              additionalHeaders.push(`"Content-Type": "${contentType}"`);
+            }
+
+            const headersInitType = toHeadersInitType(document, parameters);
+            if (headersInitType !== undefined) {
               omit.push("headers");
             }
 
@@ -619,10 +646,8 @@ export function addOperationObject(
                 writer.newLine();
               }
 
-              if (contentType !== undefined) {
-                writer.write(
-                  `headers: { "Content-Type": "${contentType}"; } & Record<string, string>;`,
-                );
+              if (headersInitType !== undefined) {
+                writer.write(`headers: ${headersInitType};`);
               }
             });
           },

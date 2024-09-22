@@ -117,6 +117,14 @@ if (import.meta.main) {
     namedImports: ["JSONString"],
   });
 
+  source.addImportDeclaration({
+    isTypeOnly: true,
+    moduleSpecifier: `${args["import"]}/types/headers${
+      URL.canParse(args["import"]) ? ".ts" : ""
+    }`,
+    namedImports: ["TypedHeadersInit"],
+  });
+
   if (options.experimentalURLSearchParams) {
     source.addImportDeclaration({
       isTypeOnly: true,
