@@ -53,12 +53,5 @@ await build({
   postBuild() {
     Deno.copyFileSync("LICENSE", "npm/LICENSE");
     Deno.copyFileSync("README.md", "npm/README.md");
-
-    // Add shebang to main.js
-    const main = Deno.readTextFileSync("npm/esm/main.js");
-    Deno.writeTextFileSync(
-      "npm/esm/main.js",
-      `#!/usr/bin/env node --no-warnings=ExperimentalWarning\n${main}`,
-    );
   },
 });
