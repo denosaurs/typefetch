@@ -28,3 +28,5 @@ export function addEventListener(
   process.on("SIGINT", listener);
   process.on("uncaughtException", listener);
 }
+
+export const __npm = true;

@@ -5,20 +5,35 @@ import { build, emptyDir } from "jsr:@deno/dnt";
 await emptyDir("./npm");
 
 await build({
-  entryPoints: [{
-    kind: "bin",
-    name: "typefetch",
-    path: "./main.ts",
-  }],
+  entryPoints: [
+    {
+      kind: "bin",
+      name: "typefetch",
+      path: "./main.ts",
+    },
+    "./types/headers.ts",
+    "./types/json.ts",
+    "./types/urlsearchparams.ts",
+  ],
+  filterDiagnostic: (diagnostic) => {
+    // Ignore excessively deep and possibly infinite type errors
+    if (diagnostic.code === 2589) {
+      return false;
+    }
+
+    return true;
+  },
   scriptModule: false,
   outDir: "./npm",
   shims: {
     deno: true,
     timers: true,
-    custom: [{
-      globalNames: ["addEventListener"],
-      module: "./node/shims.ts",
-    }],
+    custom: [
+      {
+        globalNames: ["addEventListener", "__npm"],
+        module: "./node/shims.ts",
+      },
+    ],
   },
   test: false,
   importMap: "./deno.json",

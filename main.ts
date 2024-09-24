@@ -11,7 +11,7 @@ import manifest from "./deno.json" with { type: "json" };
 
 export * from "./mod.ts";
 
-const args = parseArgs(Deno.args, {
+const parseOptions = {
   string: [
     "output",
     "config",
@@ -28,13 +28,15 @@ const args = parseArgs(Deno.args, {
   alias: { "output": "o", "help": "h", "version": "V" },
   default: {
     "output": "./typefetch.d.ts",
-    "import": "https://raw.githubusercontent.com/denosaurs/typefetch/main",
+    "import": "__npm" in globalThis
+      ? manifest.name
+      : "https://raw.githubusercontent.com/denosaurs/typefetch/main",
     "include-server-urls": true,
     "include-absolute-url": false,
     "include-relative-url": false,
     "experimental-urlsearchparams": false,
   },
-  unknown: (arg, key) => {
+  unknown: (arg: string, key?: string) => {
     if (key === undefined) return;
 
     console.error(
@@ -43,7 +45,9 @@ const args = parseArgs(Deno.args, {
     );
     Deno.exit(1);
   },
-});
+} as const;
+
+const args = parseArgs(Deno.args, parseOptions);
 
 if (args.help) {
   // deno-fmt-ignore
@@ -52,14 +56,14 @@ if (args.help) {
     `Options:\n` +
     `  -h, --help                          Print this help message\n` +
     `  -V, --version                       Print the version of TypeFetch\n` +
-    `  -o, --output    <PATH>              Output file path                                                   (default: typefetch.d.ts)\n` +
+    `  -o, --output    <PATH>              Output file path                                                   (default: ${parseOptions.default["output"]})\n` +
     `      --config    <PATH>              File path to the tsconfig.json file\n` +
-    `      --import    <PATH>              Import path for TypeFetch                                          (default: https://raw.githubusercontent.com/denosaurs/typefetch/main)\n` +
+    `      --import    <PATH>              Import path for TypeFetch                                          (default: ${parseOptions.default["import"]})\n` +
     `      --base-urls <URLS>              A comma separated list of custom base urls for paths to start with\n` +
-    `      --include-server-urls           Include server URLs from the schema in the generated paths         (default: true)\n` +
-    `      --include-absolute-url          Include absolute URLs in the generated paths                       (default: false)\n` +
-    `      --include-relative-url          Include relative URLs in the generated paths                       (default: false)\n` +
-    `      --experimental-urlsearchparams  Enable the experimental fully typed URLSearchParams type           (default: false)\n`,
+    `      --include-server-urls           Include server URLs from the schema in the generated paths         (default: ${parseOptions.default["include-server-urls"]})\n` +
+    `      --include-absolute-url          Include absolute URLs in the generated paths                       (default: ${parseOptions.default["include-absolute-url"]})\n` +
+    `      --include-relative-url          Include relative URLs in the generated paths                       (default: ${parseOptions.default["include-relative-url"]})\n` +
+    `      --experimental-urlsearchparams  Enable the experimental fully typed URLSearchParams type           (default: ${parseOptions.default["experimental-urlsearchparams"]})\n`,
   );
   Deno.exit(0);
 }
