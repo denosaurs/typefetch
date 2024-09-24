@@ -14,6 +14,10 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
       - uses: denoland/setup-deno@v1
       - run: deno run -A scripts/npm.ts
       - run: deno publish
