@@ -6,14 +6,27 @@ await emptyDir("./npm");
 
 await build({
   entryPoints: [
+    "./mod.ts",
     {
       kind: "bin",
       name: "typefetch",
       path: "./main.ts",
     },
-    "./types/headers.ts",
-    "./types/json.ts",
-    "./types/urlsearchparams.ts",
+    {
+      kind: "export",
+      name: "./types/headers",
+      path: "./types/headers.ts",
+    },
+    {
+      kind: "export",
+      name: "./types/json",
+      path: "./types/json.ts",
+    },
+    {
+      kind: "export",
+      name: "./types/urlsearchparams",
+      path: "./types/urlsearchparams.ts",
+    },
   ],
   filterDiagnostic: (diagnostic) => {
     // Ignore excessively deep and possibly infinite type errors
