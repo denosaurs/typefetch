@@ -4,7 +4,7 @@ import type {
   ModuleDeclaration,
   SourceFile,
 } from "ts-morph";
-import { STATUS_CODE } from "@std/http";
+import { STATUS_CODE } from "@std/http/status";
 
 import type { OpenAPI } from "./types/openapi.ts";
 

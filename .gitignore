@@ -1,3 +1,4 @@
+npm/
 examples/
 typefetch.d.ts
 tests/*/schemas/*.ts

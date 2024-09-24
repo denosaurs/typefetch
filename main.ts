@@ -1,5 +1,5 @@
-import { parseArgs } from "@std/cli";
-import * as yaml from "@std/yaml";
+import { parseArgs } from "@std/cli/parse-args";
+import * as yaml from "@std/yaml/parse";
 import { wait } from "@denosaurs/wait";
 
 import { ModuleDeclarationKind, Project } from "ts-morph";

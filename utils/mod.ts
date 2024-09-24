@@ -111,7 +111,7 @@ export function resolveRef<T = unknown>(object: unknown, ref: string): T {
  * Resolves a path to an absolute path with support for file URLs.
  */
 export function resolve(path: string | URL): string {
-  if (URL.canParse(path)) {
+  if (URL.canParse(path.toString())) {
     try {
       path = fromFileUrl(path);
       // deno-lint-ignore no-empty
