@@ -14,4 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v1
+      - run: deno run -A scripts/npm.ts
       - run: deno publish
+      - run: npm publish --provenance
+        working-directory: ./npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
