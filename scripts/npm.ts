@@ -5,7 +5,11 @@ import { build, emptyDir } from "jsr:@deno/dnt";
 await emptyDir("./npm");
 
 await build({
-  entryPoints: ["./main.ts"],
+  entryPoints: [{
+    kind: "bin",
+    name: "typefetch",
+    path: "./main.ts",
+  }],
   scriptModule: false,
   outDir: "./npm",
   shims: {
