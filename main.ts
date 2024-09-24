@@ -39,7 +39,7 @@ const args = parseArgs(Deno.args, {
 
     console.error(
       `Unknown option: ${arg}\n` +
-      `Run typefetch --help to see a list of available options`,
+        `Run typefetch --help to see a list of available options`,
     );
     Deno.exit(1);
   },
@@ -72,7 +72,7 @@ if (args.version) {
 if (args._.length !== 1 || empty(args._[0])) {
   console.error(
     `Expected a single OpenAPI schema to transform\n` +
-    `Run typefetch --help for more information`,
+      `Run typefetch --help for more information`,
   );
   Deno.exit(1);
 }
@@ -115,23 +115,26 @@ const source = project.createSourceFile(output, undefined, {
 
 source.addImportDeclaration({
   isTypeOnly: true,
-  moduleSpecifier: `${args["import"]}/types/json${URL.canParse(args["import"]) ? ".ts" : ""
-    }`,
+  moduleSpecifier: `${args["import"]}/types/json${
+    URL.canParse(args["import"]) ? ".ts" : ""
+  }`,
   namedImports: ["JSONString"],
 });
 
 source.addImportDeclaration({
   isTypeOnly: true,
-  moduleSpecifier: `${args["import"]}/types/headers${URL.canParse(args["import"]) ? ".ts" : ""
-    }`,
+  moduleSpecifier: `${args["import"]}/types/headers${
+    URL.canParse(args["import"]) ? ".ts" : ""
+  }`,
   namedImports: ["TypedHeadersInit"],
 });
 
 if (options.experimentalURLSearchParams) {
   source.addImportDeclaration({
     isTypeOnly: true,
-    moduleSpecifier: `${args["import"]}/types/urlsearchparams${URL.canParse(args["import"]) ? ".ts" : ""
-      }`,
+    moduleSpecifier: `${args["import"]}/types/urlsearchparams${
+      URL.canParse(args["import"]) ? ".ts" : ""
+    }`,
     namedImports: ["URLSearchParamsString"],
   });
 }
