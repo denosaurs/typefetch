@@ -53,5 +53,6 @@ await build({
   postBuild() {
     Deno.copyFileSync("LICENSE", "npm/LICENSE");
     Deno.copyFileSync("README.md", "npm/README.md");
+    Deno.chmod("npm/esm/main.js", 0o711);
   },
 });
