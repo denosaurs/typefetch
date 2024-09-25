@@ -48,7 +48,6 @@ export function escapeObjectKey(key: string): string {
  */
 function toSafeUnionString(
   type: string | undefined,
-  _: number,
   types: (string | undefined)[],
 ): string | undefined {
   if (type === "string" && types.length > 1) {
@@ -110,7 +109,7 @@ export function toSchemaType(
   if (schema.oneOf) {
     return schema.oneOf
       .map((schema) => toSchemaType(document, schema))
-      .map(toSafeUnionString)
+      .map((type, _, types) => toSafeUnionString(type, types))
       .filter(Boolean)
       .join("|");
   }
@@ -131,7 +130,7 @@ export function toSchemaType(
 
     return schema.anyOf
       .map((schema) => toSchemaType(document, schema))
-      .map(toSafeUnionString)
+      .map((type, _, types) => toSafeUnionString(type, types))
       .filter(Boolean)
       .join("|");
   }
@@ -431,16 +430,24 @@ export function toHeadersInitType(
   parameters: ParameterObjectMap,
   additionalHeaders: string[] = [],
 ): string | undefined {
-  const headersInitProperties = [...additionalHeaders];
+  const headersInitProperties = [];
 
   for (const parameter of parameters.values()) {
     if (parameter.in !== "header") continue;
+
+    // If the header has a predefined default in the additionalHeaders argument discard it
+    additionalHeaders = additionalHeaders.filter((header) =>
+      !header.startsWith(`"${parameter.name}"`)
+    );
+
     headersInitProperties.push(
       `"${parameter.name}"${parameter.required ? "" : "?"}: ${
         toSchemaType(document, parameter.schema) ?? "string"
       }`,
     );
   }
+
+  headersInitProperties.unshift(...additionalHeaders);
 
   if (headersInitProperties.length === 0) return undefined;
   return `TypedHeadersInit<{ ${headersInitProperties.join("; ")} }>`;

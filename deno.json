@@ -1,6 +1,6 @@
 {
   "name": "@denosaurs/typefetch",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "exports": {
     ".": "./main.ts"
   },
@@ -13,7 +13,7 @@
     "openapi-types": "npm:openapi-types@12.1",
     "ts-morph": "npm:ts-morph@22.0"
   },
-  "exclude": ["tests/*/schemas/*.ts", "npm/*"],
+  "exclude": ["tests/*/schemas/*.ts", "tests/*/typefetch.ts", "npm/*"],
   "test": {
     "include": ["tests/test.ts"]
   },

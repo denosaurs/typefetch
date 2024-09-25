@@ -1,7 +1,7 @@
 import { walk } from "jsr:@std/fs";
 import { assert } from "jsr:@std/assert";
 
-import { globToRegExp } from "@std/path";
+import { dirname, globToRegExp } from "@std/path";
 
 const pwd = import.meta.resolve("../");
 const main = import.meta.resolve("../main.ts");
@@ -16,6 +16,30 @@ Deno.test("Generate schemas", async ({ step }) => {
       const path = import.meta.resolve(`../${schema.path}`);
       const output = await new Deno.Command("deno", {
         args: ["run", "-A", main, `-o=${path}.ts`, `--import=${pwd}`, path],
+        stdout: "inherit",
+        stderr: "inherit",
+      }).output();
+      assert(output.success);
+    });
+  }
+
+  for await (
+    const schema of walk("./tests/", {
+      match: [globToRegExp("**/schema.ts")],
+    })
+  ) {
+    const { default: path } = await import(`../${schema.path}`);
+    const dir = dirname(schema.path);
+    await step(`Generating schema for ${path}`, async () => {
+      const output = await new Deno.Command("deno", {
+        args: [
+          "run",
+          "-A",
+          main,
+          `-o=${dir}/typefetch.ts`,
+          `--import=${pwd}`,
+          path,
+        ],
         stdout: "inherit",
         stderr: "inherit",
       }).output();

@@ -1,4 +1,5 @@
 npm/
 examples/
 typefetch.d.ts
+tests/*/typefetch.ts
 tests/*/schemas/*.ts
