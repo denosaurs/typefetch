@@ -629,7 +629,11 @@ export function addOperationObject(
               additionalHeaders.push(`"Content-Type": "${contentType}"`);
             }
 
-            const headersInitType = toHeadersInitType(document, parameters);
+            const headersInitType = toHeadersInitType(
+              document,
+              parameters,
+              additionalHeaders,
+            );
             if (headersInitType !== undefined) {
               omit.push("headers");
             }
