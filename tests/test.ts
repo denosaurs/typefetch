@@ -14,7 +14,7 @@ Deno.test("Generate schemas", async ({ step }) => {
   ) {
     await step(`Generating schema for ${schema.path}`, async () => {
       const path = import.meta.resolve(`../${schema.path}`);
-      const output = await new Deno.Command("deno", {
+      const output = await new Deno.Command(Deno.execPath(), {
         args: ["run", "-A", main, `-o=${path}.ts`, `--import=${pwd}`, path],
         stdout: "inherit",
         stderr: "inherit",
@@ -31,7 +31,7 @@ Deno.test("Generate schemas", async ({ step }) => {
     const { default: path } = await import(`../${schema.path}`);
     const dir = dirname(schema.path);
     await step(`Generating schema for ${path}`, async () => {
-      const output = await new Deno.Command("deno", {
+      const output = await new Deno.Command(Deno.execPath(), {
         args: [
           "run",
           "-A",
@@ -56,7 +56,7 @@ Deno.test("Check types", async ({ step }) => {
   ) {
     await step(`Checking types for ${test.path}`, async () => {
       const path = import.meta.resolve(`../${test.path}`);
-      const output = await new Deno.Command("deno", {
+      const output = await new Deno.Command(Deno.execPath(), {
         args: ["check", path],
         stdout: "inherit",
         stderr: "inherit",
