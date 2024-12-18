@@ -20,11 +20,11 @@ jobs:
         with:
           node-version: "20.x"
           registry-url: "https://registry.npmjs.org"
-      - uses: denoland/setup-deno@v1
+      - uses: denoland/setup-deno@v2
       - run: |
-        echo "DENO_VERSION=$(cat deno.json | jq \".version\")" >> $GITHUB_ENV
-        echo "NPM_VERSION=$(npm info @denosaurs/typefetch --json | jq \".['dist-tags'].latest\")" >> $GITHUB_ENV
-        echo "JSR_VERSION=$(curl -s https://jsr.io/@denosaurs/typefetch/meta.json | jq \".latest\")" >> $GITHUB_ENV
+          echo "DENO_VERSION=$(cat deno.json | jq \".version\")" >> $GITHUB_ENV
+          echo "NPM_VERSION=$(npm info @denosaurs/typefetch --json | jq \".['dist-tags'].latest\")" >> $GITHUB_ENV
+          echo "JSR_VERSION=$(curl -s https://jsr.io/@denosaurs/typefetch/meta.json | jq \".latest\")" >> $GITHUB_ENV
       - run: deno publish
         if: ${{ env.DENO_VERSION != env.JSR_VERSION }}
       - run: deno run -A scripts/npm.ts

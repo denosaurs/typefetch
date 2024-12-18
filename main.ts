@@ -63,7 +63,7 @@ if (args.help) {
     `      --include-server-urls           Include server URLs from the schema in the generated paths         (default: ${parseOptions.default["include-server-urls"]})\n` +
     `      --include-absolute-url          Include absolute URLs in the generated paths                       (default: ${parseOptions.default["include-absolute-url"]})\n` +
     `      --include-relative-url          Include relative URLs in the generated paths                       (default: ${parseOptions.default["include-relative-url"]})\n` +
-    `      --experimental-urlsearchparams  Enable the experimental fully typed URLSearchParams type           (default: ${parseOptions.default["experimental-urlsearchparams"]})\n`,
+    `      --experimental-urlsearchparams  Enable the experimental fully typed URLSearchParamsString type     (default: ${parseOptions.default["experimental-urlsearchparams"]})\n`,
   );
   Deno.exit(0);
 }
@@ -104,6 +104,7 @@ try {
 }
 importSpinner.succeed("Schema resolved");
 
+const baseImport = args.import.replace(/\/$/, "");
 const options = {
   baseUrls: args["base-urls"]?.split(","),
   includeAbsoluteUrl: args["include-absolute-url"],
@@ -119,16 +120,16 @@ const source = project.createSourceFile(output, undefined, {
 
 source.addImportDeclaration({
   isTypeOnly: true,
-  moduleSpecifier: `${args["import"]}/types/json${
-    URL.canParse(args["import"]) ? ".ts" : ""
+  moduleSpecifier: `${baseImport}/types/json${
+    URL.canParse(baseImport) ? ".ts" : ""
   }`,
   namedImports: ["JSONString"],
 });
 
 source.addImportDeclaration({
   isTypeOnly: true,
-  moduleSpecifier: `${args["import"]}/types/headers${
-    URL.canParse(args["import"]) ? ".ts" : ""
+  moduleSpecifier: `${baseImport}/types/headers${
+    URL.canParse(baseImport) ? ".ts" : ""
   }`,
   namedImports: ["TypedHeadersInit"],
 });
@@ -136,8 +137,16 @@ source.addImportDeclaration({
 if (options.experimentalURLSearchParams) {
   source.addImportDeclaration({
     isTypeOnly: true,
-    moduleSpecifier: `${args["import"]}/types/urlsearchparams${
-      URL.canParse(args["import"]) ? ".ts" : ""
+    moduleSpecifier: `${baseImport}/types/url_search_params_string${
+      URL.canParse(baseImport) ? ".ts" : ""
+    }`,
+    namedImports: ["URLSearchParamsString"],
+  });
+} else {
+  source.addImportDeclaration({
+    isTypeOnly: true,
+    moduleSpecifier: `${baseImport}/types/url_search_params${
+      URL.canParse(baseImport) ? ".ts" : ""
     }`,
     namedImports: ["URLSearchParamsString"],
   });

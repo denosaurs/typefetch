@@ -10,30 +10,16 @@ jobs:
   fmt:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-
-      - name: Setup latest deno version
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-
-      - name: Run deno fmt
-        run: deno fmt --check
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+      - run: deno fmt --check
 
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-
-      - name: Setup latest deno version
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-
-      - name: Run deno lint
-        run: deno lint
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+      - run: deno lint
 
   check:
     runs-on: ubuntu-latest
@@ -52,13 +38,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-
-      - name: Setup latest deno version
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-
-      - name: Run deno test
-        run: deno test -A
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+      - run: deno test -A
