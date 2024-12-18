@@ -24,6 +24,11 @@ await build({
     },
     {
       kind: "export",
+      name: "./types/url_search_params",
+      path: "./types/url_search_params.ts",
+    },
+    {
+      kind: "export",
       name: "./types/url_search_params_string",
       path: "./types/url_search_params_string.ts",
     },

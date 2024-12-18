@@ -35,7 +35,7 @@ export type URLSearchParamsInit<T extends URLSearchParamsRecord> =
   | T
   | URLSearchParamsString<T>;
 
-declare interface URLSearchParams<
+export declare interface URLSearchParams<
   T extends URLSearchParamsRecord = URLSearchParamsRecord,
 > {
   /**
@@ -69,8 +69,8 @@ declare interface URLSearchParams<
    * searchParams.getAll('name');
    * ```
    */
-  get<K extends RequiredKeys<T>>(name: K): [T[K]];
-  get<K extends OptionalKeys<T>>(name: K): [] | [T[K]];
+  getAll<K extends RequiredKeys<T>>(name: K): [T[K]];
+  getAll<K extends OptionalKeys<T>>(name: K): [] | [NonNullable<T[K]>];
 
   /**
    * Returns the first value associated to the given search parameter.
@@ -194,7 +194,7 @@ declare interface URLSearchParams<
   size: number;
 }
 
-declare var URLSearchParams: {
+export declare var URLSearchParams: {
   readonly prototype: URLSearchParams;
   new <T extends URLSearchParamsRecord>(
     init?: URLSearchParamsInit<T>,

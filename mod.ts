@@ -61,19 +61,28 @@ export function toSchemaType(
   schema?:
     | OpenAPI.ReferenceObject
     | OpenAPI.SchemaObject,
+  coerceToString?: boolean,
 ): string | undefined {
   if (schema === undefined) return undefined;
   if ("$ref" in schema) return pascalCase(schema.$ref.split("/").pop()!);
 
   if ("nullable" in schema && schema.nullable !== undefined) {
-    const type = toSchemaType(document, { ...schema, nullable: undefined });
+    const type = toSchemaType(
+      document,
+      { ...schema, nullable: undefined },
+      coerceToString,
+    );
     if (type !== undefined) return `${type}|null`;
     return "null";
   }
 
   if (schema.not !== undefined) {
-    const type = toSchemaType(document, { ...schema, not: undefined });
-    const exclude = toSchemaType(document, schema.not);
+    const type = toSchemaType(
+      document,
+      { ...schema, not: undefined },
+      coerceToString,
+    );
+    const exclude = toSchemaType(document, schema.not, coerceToString);
     if (type !== undefined && exclude !== undefined) {
       return `Exclude<${type}, ${exclude}>`;
     }
@@ -85,12 +94,13 @@ export function toSchemaType(
     const type = toSchemaType(document, {
       ...schema,
       additionalProperties: undefined,
-    });
+    }, coerceToString);
     let additionalProperties;
     if (schema.additionalProperties !== true) {
       additionalProperties = toSchemaType(
         document,
         schema.additionalProperties,
+        coerceToString,
       );
     }
     if (type !== undefined) {
@@ -101,14 +111,14 @@ export function toSchemaType(
 
   if (schema.allOf) {
     return schema.allOf
-      .map((schema) => toSchemaType(document, schema))
+      .map((schema) => toSchemaType(document, schema, coerceToString))
       .filter(Boolean)
       .join("&");
   }
 
   if (schema.oneOf) {
     return schema.oneOf
-      .map((schema) => toSchemaType(document, schema))
+      .map((schema) => toSchemaType(document, schema, coerceToString))
       .map((type, _, types) => toSafeUnionString(type, types))
       .filter(Boolean)
       .join("|");
@@ -129,7 +139,7 @@ export function toSchemaType(
     }
 
     return schema.anyOf
-      .map((schema) => toSchemaType(document, schema))
+      .map((schema) => toSchemaType(document, schema, coerceToString))
       .map((type, _, types) => toSafeUnionString(type, types))
       .filter(Boolean)
       .join("|");
@@ -141,11 +151,13 @@ export function toSchemaType(
 
   switch (schema.type) {
     case "boolean":
+      if (coerceToString) return "`${boolean}`";
       return "boolean";
     case "string":
       return "string";
     case "number":
     case "integer":
+      if (coerceToString) return "`${number}`";
       return "number";
     case "object": {
       if ("properties" in schema && schema.properties !== undefined) {
@@ -157,19 +169,24 @@ export function toSchemaType(
             .map(([property, type]) =>
               `${escapeObjectKey(property)}${
                 schema.required?.includes(property) ? "" : "?"
-              }:${toSchemaType(document, type)}`
+              }:${toSchemaType(document, type, coerceToString)}`
             )
             .join(";")
         }}`;
       }
+
+      if (coerceToString) return "Record<string, string>";
       return "Record<string, unknown>";
     }
     case "array": {
-      const items = toSchemaType(document, schema.items);
+      const items = toSchemaType(document, schema.items, coerceToString);
       if (items !== undefined) return `(${items})[]`;
+
+      if (coerceToString) return "string[]";
       return "unknown[]";
     }
     case "null":
+      if (coerceToString) return "`${null}`";
       return "null";
   }
 
@@ -300,25 +317,43 @@ export function createRequestBodyType(
   document: OpenAPI.Document,
   contentType: string,
   schema?: OpenAPI.SchemaObject | OpenAPI.ReferenceObject,
+  options?: Options,
 ): string {
   let type = "BodyInit";
 
   switch (contentType) {
-    case "application/json":
+    case "application/json": {
       type = `JSONString<${toSchemaType(document, schema) ?? "unknown"}>`;
       break;
-    case "text/plain":
+    }
+    case "text/plain": {
       type = "string";
       break;
-    case "multipart/form-data":
+    }
+    case "multipart/form-data": {
       type = "FormData";
       break;
-    case "application/x-www-form-urlencoded":
-      type = "URLSearchParams";
+    }
+    case "application/x-www-form-urlencoded": {
+      const schemaType = toSchemaType(document, schema, true);
+      if (schemaType !== undefined) {
+        const types = [`URLSearchParamsString<${schemaType}>`];
+
+        // TODO: We don't yet support URLSearchParams with the --experimental-urlsearchparams flag
+        if (!options?.experimentalURLSearchParams) {
+          types.push(`URLSearchParams<${schemaType}>`);
+        }
+
+        return `(${types.join("|")})`;
+      } else {
+        type = `URLSearchParams`;
+      }
       break;
-    case "application/octet-stream":
+    }
+    case "application/octet-stream": {
       type = "ReadableStream | Blob | BufferSource";
       break;
+    }
   }
 
   return type;
@@ -385,7 +420,6 @@ export function toTemplateString(
   document: OpenAPI.Document,
   pattern: string,
   parameters: ParameterObjectMap,
-  options: Options,
 ): string {
   let patternTemplateString = pattern;
   let urlSearchParamsOptional = true;
@@ -397,7 +431,9 @@ export function toTemplateString(
         urlSearchParamsOptional = false;
       }
 
-      const types = [toSchemaType(document, parameter.schema) ?? "string"];
+      const types = [
+        toSchemaType(document, parameter.schema, true) ?? "string",
+      ];
       if (parameter.allowEmptyValue === true) types.push("true");
       urlSearchParamsRecord.push(
         `${escapeObjectKey(parameter.name)}${!parameter.required ? "?" : ""}: ${
@@ -414,15 +450,17 @@ export function toTemplateString(
     );
   }
 
-  const URLSearchParams = urlSearchParamsRecord.length > 0
-    ? options.experimentalURLSearchParams
-      ? `\${URLSearchParamsString<{${urlSearchParamsRecord.join(";")}}>}`
-      : urlSearchParamsOptional
-      ? '${"" | `?${string}`}'
-      : "?${string}"
+  const urlSearchParamsType = urlSearchParamsRecord.length > 0
+    ? `URLSearchParamsString<{${urlSearchParamsRecord.join(";")}}>`
+    : undefined;
+
+  const urlSearchParams = urlSearchParamsType
+    ? urlSearchParamsOptional
+      ? `\${\`?\${${urlSearchParamsType}}\` | ""}`
+      : `?\${${urlSearchParamsType}}`
     : "";
 
-  return `${patternTemplateString}${URLSearchParams}`;
+  return `${patternTemplateString}${urlSearchParams}`;
 }
 
 export function toHeadersInitType(
@@ -569,7 +607,7 @@ export function addOperationObject(
     doc.tags.push({ tagName: "summary", text: operation.summary.trim() });
   }
 
-  const path = toTemplateString(document, pattern, parameters, options);
+  const path = toTemplateString(document, pattern, parameters);
 
   const inputs = [];
 

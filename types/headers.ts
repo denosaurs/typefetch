@@ -32,7 +32,7 @@ type HeadersRecord = Record<string, string>;
 // TODO: Add support for tuple format of headers
 export type TypedHeadersInit<T extends HeadersRecord> = T | Headers<T>;
 
-declare interface Headers<T extends HeadersRecord = HeadersRecord> {
+export declare interface Headers<T extends HeadersRecord = HeadersRecord> {
   /**
    * Appends a new value onto an existing header inside a `Headers` object, or
    * adds the header if it does not already exist.
@@ -70,7 +70,7 @@ declare interface Headers<T extends HeadersRecord = HeadersRecord> {
   getSetCookie(): string[];
 }
 
-declare var Headers: {
+export declare var Headers: {
   readonly prototype: Headers;
   new <T extends HeadersRecord>(init?: T): Headers<T>;
 };
