@@ -136,7 +136,7 @@ source.addImportDeclaration({
 if (options.experimentalURLSearchParams) {
   source.addImportDeclaration({
     isTypeOnly: true,
-    moduleSpecifier: `${args["import"]}/types/urlsearchparams${
+    moduleSpecifier: `${args["import"]}/types/url_search_params_string${
       URL.canParse(args["import"]) ? ".ts" : ""
     }`,
     namedImports: ["URLSearchParamsString"],
