@@ -104,6 +104,7 @@ try {
 }
 importSpinner.succeed("Schema resolved");
 
+const baseImport = args.import.replace(/\/$/, "");
 const options = {
   baseUrls: args["base-urls"]?.split(","),
   includeAbsoluteUrl: args["include-absolute-url"],
@@ -119,16 +120,16 @@ const source = project.createSourceFile(output, undefined, {
 
 source.addImportDeclaration({
   isTypeOnly: true,
-  moduleSpecifier: `${args["import"]}/types/json${
-    URL.canParse(args["import"]) ? ".ts" : ""
+  moduleSpecifier: `${baseImport}/types/json${
+    URL.canParse(baseImport) ? ".ts" : ""
   }`,
   namedImports: ["JSONString"],
 });
 
 source.addImportDeclaration({
   isTypeOnly: true,
-  moduleSpecifier: `${args["import"]}/types/headers${
-    URL.canParse(args["import"]) ? ".ts" : ""
+  moduleSpecifier: `${baseImport}/types/headers${
+    URL.canParse(baseImport) ? ".ts" : ""
   }`,
   namedImports: ["TypedHeadersInit"],
 });
@@ -136,16 +137,16 @@ source.addImportDeclaration({
 if (options.experimentalURLSearchParams) {
   source.addImportDeclaration({
     isTypeOnly: true,
-    moduleSpecifier: `${args["import"]}/types/url_search_params_string${
-      URL.canParse(args["import"]) ? ".ts" : ""
+    moduleSpecifier: `${baseImport}/types/url_search_params_string${
+      URL.canParse(baseImport) ? ".ts" : ""
     }`,
     namedImports: ["URLSearchParamsString"],
   });
 } else {
   source.addImportDeclaration({
     isTypeOnly: true,
-    moduleSpecifier: `${args["import"]}/types/url_search_params${
-      URL.canParse(args["import"]) ? ".ts" : ""
+    moduleSpecifier: `${baseImport}/types/url_search_params${
+      URL.canParse(baseImport) ? ".ts" : ""
     }`,
     namedImports: ["URLSearchParamsString"],
   });
