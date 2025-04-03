@@ -150,6 +150,8 @@ export function toSchemaType(
     // use the `toSafeUnionString` function to prevent narrowing of the type.
     const safeStringUnion = schema.anyOf.every((schema) =>
       "type" in schema &&
+      !("enum" in schema || "oneOf" in schema ||
+        "anyOf" in schema || "allOf" in schema) &&
       (schema.type === "boolean" || schema.type === "string" ||
         schema.type === "number" || schema.type === "integer" ||
         schema.type === "object" || schema.type === "array" ||
