@@ -45,6 +45,12 @@ export function escapeObjectKey(key: string): string {
 
 /**
  * Prevents narrowing of string literal union to string.
+ *
+ * @example
+ * ```ts
+ * type ThisWillBeNarrowedToString = string | "string" | "number" | "boolean";
+ * type ThisWillNotBeNarrowed = NonNullable<string> | "string" | "number" | "boolean";
+ * ```
  */
 function toSafeUnionString(
   type: string | undefined,
@@ -53,6 +59,7 @@ function toSafeUnionString(
   if (type === "string" && types.length > 1) {
     return "NonNullable<string>";
   }
+
   return type;
 }
 
@@ -138,9 +145,26 @@ export function toSchemaType(
       console.groupEnd();
     }
 
+    // The string union is safe if all types are boolean, string, number, integer,
+    // object, array or null. Any other value is not known to be safe and we therefore
+    // use the `toSafeUnionString` function to prevent narrowing of the type.
+    const safeStringUnion = schema.anyOf.every((schema) =>
+      "type" in schema &&
+      !("enum" in schema || "oneOf" in schema ||
+        "anyOf" in schema || "allOf" in schema) &&
+      (schema.type === "boolean" || schema.type === "string" ||
+        schema.type === "number" || schema.type === "integer" ||
+        schema.type === "object" || schema.type === "array" ||
+        schema.type === "null")
+    );
+
     return schema.anyOf
       .map((schema) => toSchemaType(document, schema, coerceToString))
-      .map((type, _, types) => toSafeUnionString(type, types))
+      .map((type, _, types) =>
+        safeStringUnion ? type : toSafeUnionString(type, types)
+      )
+      // Naively removes duplicates.
+      .filter((type, index, types) => types.indexOf(type) === index)
       .filter(Boolean)
       .join("|");
   }
