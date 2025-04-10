@@ -687,7 +687,9 @@ export function addOperationObject(
     typeParameters.push({
       name: "T",
       constraint: discriminatorType,
-      default: options.experimentalRequireDiscriminator ? undefined : discriminatorType,
+      default: options.experimentalRequireDiscriminator
+        ? undefined
+        : discriminatorType,
     });
   }
 
