@@ -2,7 +2,9 @@ import type {
   CodeBlockWriter,
   JSDocStructure,
   ModuleDeclaration,
+  OptionalKind,
   SourceFile,
+  TypeParameterDeclarationStructure,
 } from "ts-morph";
 import { STATUS_CODE } from "@std/http/status";
 
@@ -34,6 +36,8 @@ export interface Options {
   includeRelativeUrl?: boolean;
   includeServerUrls?: boolean;
   experimentalURLSearchParams?: boolean;
+  experimentalDiscriminator?: string | false;
+  experimentalRequireDiscriminator?: boolean;
 }
 
 export function escapeObjectKey(key: string): string {
@@ -677,10 +681,21 @@ export function addOperationObject(
 
   const input = inputs.map((template) => `\`${template}\``).join("|");
 
+  const typeParameters: OptionalKind<TypeParameterDeclarationStructure>[] = [];
+  if (options.experimentalDiscriminator) {
+    const discriminatorType = `"${options.experimentalDiscriminator}"`;
+    typeParameters.push({
+      name: "T",
+      constraint: discriminatorType,
+      default: options.experimentalRequireDiscriminator ? undefined : discriminatorType,
+    });
+  }
+
   global.addFunctions(
     requestBodyTypes.map(({ contentType, requestBodyType }) => ({
       name: "fetch",
       docs: notEmpty(doc) ? [doc] : [],
+      typeParameters: typeParameters,
       parameters: [
         {
           name: "input",
