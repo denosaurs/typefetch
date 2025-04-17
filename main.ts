@@ -27,12 +27,13 @@ const parseOptions = {
     "experimental-urlsearchparams",
     "experimental-require-discriminator",
   ],
-  alias: { "output": "o", "help": "h", "version": "V" },
+  alias: { output: "o", help: "h", version: "V" },
   default: {
-    "output": "./typefetch.d.ts",
-    "import": "__npm" in globalThis
-      ? manifest.name
-      : "https://raw.githubusercontent.com/denosaurs/typefetch/main",
+    output: "./typefetch.d.ts",
+    import:
+      "__npm" in globalThis
+        ? manifest.name
+        : "https://raw.githubusercontent.com/denosaurs/typefetch/main",
     "include-server-urls": true,
     "include-absolute-url": false,
     "include-relative-url": false,
@@ -57,19 +58,19 @@ if (args.help) {
   // deno-fmt-ignore
   console.log(
     `Usage: typefetch [OPTIONS] <PATH>\n\n` +
-    `Options:\n` +
-    `  -h, --help                                Print this help message\n` +
-    `  -V, --version                             Print the version of TypeFetch\n` +
-    `  -o, --output    <PATH>                    Output file path                                                   (default: ${parseOptions.default["output"]})\n` +
-    `      --config    <PATH>                    File path to the tsconfig.json file\n` +
-    `      --import    <PATH>                    Import path for TypeFetch                                          (default: ${parseOptions.default["import"]})\n` +
-    `      --base-urls <URLS>                    A comma separated list of custom base urls for paths to start with\n` +
-    `      --include-server-urls                 Include server URLs from the schema in the generated paths         (default: ${parseOptions.default["include-server-urls"]})\n` +
-    `      --include-absolute-url                Include absolute URLs in the generated paths                       (default: ${parseOptions.default["include-absolute-url"]})\n` +
-    `      --include-relative-url                Include relative URLs in the generated paths                       (default: ${parseOptions.default["include-relative-url"]})\n` +
-    `      --experimental-urlsearchparams        Enable the experimental fully typed URLSearchParamsString type     (default: ${parseOptions.default["experimental-urlsearchparams"]})\n` +
-    `      --experimental-discriminator          Allows you to specify a discriminator generic argument to fetch    (default: ${parseOptions.default["experimental-discriminator"]})\n` +
-    `      --experimental-require-discriminator  Makes the use of a discriminator generic argument required         (default: ${parseOptions.default["experimental-require-discriminator"]})\n`,
+      `Options:\n` +
+      `  -h, --help                                Print this help message\n` +
+      `  -V, --version                             Print the version of TypeFetch\n` +
+      `  -o, --output    <PATH>                    Output file path                                                   (default: ${parseOptions.default["output"]})\n` +
+      `      --config    <PATH>                    File path to the tsconfig.json file\n` +
+      `      --import    <PATH>                    Import path for TypeFetch                                          (default: ${parseOptions.default["import"]})\n` +
+      `      --base-urls <URLS>                    A comma separated list of custom base urls for paths to start with\n` +
+      `      --include-server-urls                 Include server URLs from the schema in the generated paths         (default: ${parseOptions.default["include-server-urls"]})\n` +
+      `      --include-absolute-url                Include absolute URLs in the generated paths                       (default: ${parseOptions.default["include-absolute-url"]})\n` +
+      `      --include-relative-url                Include relative URLs in the generated paths                       (default: ${parseOptions.default["include-relative-url"]})\n` +
+      `      --experimental-urlsearchparams        Enable the experimental fully typed URLSearchParamsString type     (default: ${parseOptions.default["experimental-urlsearchparams"]})\n` +
+      `      --experimental-discriminator          Allows you to specify a discriminator generic argument to fetch    (default: ${parseOptions.default["experimental-discriminator"]})\n` +
+      `      --experimental-require-discriminator  Makes the use of a discriminator generic argument required         (default: ${parseOptions.default["experimental-require-discriminator"]})\n`,
   );
   Deno.exit(0);
 }
@@ -117,8 +118,8 @@ const options = {
   includeServerUrls: args["include-server-urls"],
   includeRelativeUrl: args["include-relative-url"],
   experimentalURLSearchParams: args["experimental-urlsearchparams"],
-  discriminator: args["experimental-discriminator"],
-  requireDiscriminator: args["experimental-require-discriminator"],
+  experimentalDiscriminator: args["experimental-discriminator"],
+  experimentalRequireDiscriminator: args["experimental-require-discriminator"],
 };
 
 const project = new Project({ tsConfigFilePath: args.config });
