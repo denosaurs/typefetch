@@ -30,10 +30,9 @@ const parseOptions = {
   alias: { output: "o", help: "h", version: "V" },
   default: {
     output: "./typefetch.d.ts",
-    import:
-      "__npm" in globalThis
-        ? manifest.name
-        : "https://raw.githubusercontent.com/denosaurs/typefetch/main",
+    import: "__npm" in globalThis
+      ? manifest.name
+      : "https://raw.githubusercontent.com/denosaurs/typefetch/main",
     "include-server-urls": true,
     "include-absolute-url": false,
     "include-relative-url": false,
